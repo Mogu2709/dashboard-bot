@@ -10,7 +10,8 @@ const HARI_LIST = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
 export default function JadwalActions({ mode, jadwalId, matkul }) {
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ hari: 'Senin', mata_kuliah: '', dosen: '', jam_mulai: '', jam_selesai: '', ruangan: '' })
+  const [error, setError] = useState('')
+  const [form, setForm] = useState({ hari: 'Senin', tanggal: '', mata_kuliah: '', dosen: '', jam_mulai: '', jam_selesai: '', ruangan: '' })
   const router = useRouter()
 
   const handleDelete = async () => {
@@ -26,15 +27,29 @@ export default function JadwalActions({ mode, jadwalId, matkul }) {
   const handleAdd = async (e) => {
     e.preventDefault()
     setLoading(true)
-    await fetch('/api/jadwal/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-    setShowForm(false)
-    setLoading(false)
-    setForm({ hari: 'Senin', mata_kuliah: '', dosen: '', jam_mulai: '', jam_selesai: '', ruangan: '' })
-    router.refresh()
+    setError('')
+    try {
+      const res = await fetch('/api/jadwal/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const result = await res.json()
+
+      if (!result.success) {
+        setError(result.message || 'Gagal menyimpan jadwal')
+        setLoading(false)
+        return
+      }
+
+      setShowForm(false)
+      setForm({ hari: 'Senin', tanggal: '', mata_kuliah: '', dosen: '', jam_mulai: '', jam_selesai: '', ruangan: '' })
+      router.refresh()
+    } catch (err) {
+      setError('Gagal terhubung ke server. Coba lagi.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (mode === 'delete') {
@@ -79,6 +94,16 @@ export default function JadwalActions({ mode, jadwalId, matkul }) {
               </select>
             </div>
 
+            <div style={{ marginBottom: 14 }}>
+              <label className="form-label">Tanggal (opsional)</label>
+              <input
+                type="date"
+                value={form.tanggal}
+                onChange={e => setForm({ ...form, tanggal: e.target.value })}
+                className="form-input"
+              />
+            </div>
+
             {fields.map(({ key, label, placeholder }) => (
               <div key={key} style={{ marginBottom: 14 }}>
                 <label className="form-label">{label}</label>
@@ -91,6 +116,12 @@ export default function JadwalActions({ mode, jadwalId, matkul }) {
                 />
               </div>
             ))}
+
+            {error && (
+              <div style={{ padding: '10px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: 13, marginBottom: 14 }}>
+                {error}
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
               <Button type="button" variant="ghost" style={{ flex: 1 }} onClick={() => setShowForm(false)}>Batal</Button>

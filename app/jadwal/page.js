@@ -80,7 +80,15 @@ export default async function JadwalPage() {
 
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 15, fontWeight: 600, color: '#f1f5f9', marginBottom: 4 }}>{j.mata_kuliah}</div>
-                      <div style={{ fontSize: 13, color: '#64748b' }}>{j.dosen} · Ruang {j.ruangan}</div>
+                      <div style={{ fontSize: 13, color: '#64748b' }}>
+                        {j.dosen} · Ruang {j.ruangan}
+                        {j.tanggal && (
+                          <span style={{ color: '#94a3b8' }}>
+                            {' · '}
+                            {new Date(j.tanggal + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <JadwalActions mode="delete" jadwalId={j.id} matkul={j.mata_kuliah} />
