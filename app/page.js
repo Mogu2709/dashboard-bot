@@ -56,7 +56,7 @@ export default async function OverviewPage() {
       <PageHeader title="Overview" description={`Ringkasan data kelas — ${today}`} />
 
       {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div className="stat-cards-grid">
         {statCards.map((card) => {
           const Icon = card.icon
           return (
@@ -81,7 +81,7 @@ export default async function OverviewPage() {
         })}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+      <div className="overview-bottom-grid">
         {/* Chart */}
         <div className="card" style={{ padding: 24 }}>
           <h2 style={{ fontSize: 16, fontWeight: 600, color: '#f1f5f9', margin: '0 0 4px' }}>Distribusi per Angkatan</h2>

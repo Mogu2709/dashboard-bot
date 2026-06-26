@@ -53,7 +53,7 @@ export default async function MahasiswaPage() {
         />
       ) : (
         <div className="card" style={{ overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#1a1e2e', borderBottom: '1px solid #252a3a' }}>
                 {['#', 'Mahasiswa', 'NIM', 'Jurusan', 'Angkatan', 'Discord', 'Aksi'].map((h) => (
