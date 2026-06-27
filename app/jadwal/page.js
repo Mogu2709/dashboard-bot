@@ -6,6 +6,9 @@ import { supabase } from '@/lib/supabase'
 import JadwalActions from '@/components/JadwalActions'
 import { IconCalendar } from '@/components/icons'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const HARI_LIST = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
 
 const WARNA_HARI = {

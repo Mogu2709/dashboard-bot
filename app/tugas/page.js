@@ -6,6 +6,9 @@ import { supabase } from '@/lib/supabase'
 import TugasActions from '@/components/TugasActions'
 import { IconTask, IconClock, IconExternalLink } from '@/components/icons'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getTugas() {
   const { data } = await supabase.from('tugas').select('*').order('created_at', { ascending: false })
   return data || []

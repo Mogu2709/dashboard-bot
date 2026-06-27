@@ -7,6 +7,9 @@ import {
   IconUsers, IconTask, IconCalendar, IconClipboard, IconArrowRight,
 } from '@/components/icons'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getStats() {
   const [mahasiswa, tugas, jadwal, absensi] = await Promise.all([
     supabase.from('mahasiswa').select('*'),

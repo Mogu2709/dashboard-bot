@@ -6,6 +6,9 @@ import { supabase } from '@/lib/supabase'
 import AbsensiActions from '@/components/AbsensiActions'
 import { IconClipboard } from '@/components/icons'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getAbsensi() {
   const [sesiRes, detailRes, mahasiswaRes, activeRes] = await Promise.all([
     supabase.from('sesi_absensi').select('*').order('created_at', { ascending: false }),

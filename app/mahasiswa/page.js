@@ -6,6 +6,9 @@ import { supabase } from '@/lib/supabase'
 import DeleteMahasiswa from '@/components/DeleteMahasiswa'
 import { IconUsers } from '@/components/icons'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getMahasiswa() {
   const { data } = await supabase.from('mahasiswa').select('*').order('angkatan')
   return data || []
