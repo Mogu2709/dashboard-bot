@@ -31,8 +31,10 @@ export async function POST(request) {
       )
     }
 
-    const tanggal = new Date().toISOString().split('T')[0]
-    const waktu_mulai = new Date().toLocaleTimeString('id-ID', {
+    const now = new Date()
+    const tanggal = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }) // format: YYYY-MM-DD
+    const waktu_mulai = now.toLocaleTimeString('id-ID', {
+      timeZone: 'Asia/Jakarta',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',

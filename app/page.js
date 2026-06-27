@@ -51,6 +51,7 @@ export default async function OverviewPage() {
     .sort((a, b) => a.angkatan.localeCompare(b.angkatan))
 
   const today = new Date().toLocaleDateString('id-ID', {
+    timeZone: 'Asia/Jakarta',
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
 

@@ -89,3 +89,18 @@ export const IconX = createIcon(
 export const IconMenu = createIcon(
   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
 )
+
+export const IconChevronDown = createIcon(
+  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />,
+  16
+)
+
+export const IconCheck = createIcon(
+  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />,
+  16
+)
+
+export const IconUserX = createIcon(
+  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 016.273-5.519m1.605-4.71a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM17 9l3 3m0-3l-3 3" />,
+  16
+)
