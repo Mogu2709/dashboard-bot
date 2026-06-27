@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
-import { IconLock, IconClock, IconCheck, IconUserX } from '@/components/icons'
+import { IconLock, IconClock, IconCheck, IconUserX, IconRefresh } from '@/components/icons'
 
 function hitungSisaDetik(waktuMulai, tanggal, durasiMenit) {
-  // waktuMulai format "HH:MM:SS", tanggal format "YYYY-MM-DD" — keduanya berbasis WIB.
   const mulaiUTC = new Date(`${tanggal}T${waktuMulai}+07:00`).getTime()
   const selesaiUTC = mulaiUTC + durasiMenit * 60 * 1000
   return Math.round((selesaiUTC - Date.now()) / 1000)
@@ -18,20 +17,46 @@ function formatSisaWaktu(detik) {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
-export default function AbsensiSesiAktif({ sesi, hadirList, semuaMahasiswa }) {
+const POLL_INTERVAL = 5000 // 5 detik
+
+export default function AbsensiSesiAktif({ sesi, hadirList: initialHadirList, semuaMahasiswa }) {
   const [sisaDetik, setSisaDetik] = useState(() =>
     hitungSisaDetik(sesi.waktu_mulai, sesi.tanggal, sesi.durasi_menit)
   )
+  const [hadirList, setHadirList] = useState(initialHadirList)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [lastUpdated, setLastUpdated] = useState(null)
   const router = useRouter()
 
+  // Polling: ambil data hadir terbaru dari API tanpa full page reload
+  const fetchHadir = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/absensi/hadir?sesi_id=${sesi.sesi_id}`)
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.success) {
+        setHadirList(data.hadir)
+        setLastUpdated(new Date())
+      }
+    } catch {
+      // silent fail — data lama masih tampil
+    }
+  }, [sesi.sesi_id])
+
+  // Countdown timer
   useEffect(() => {
     const interval = setInterval(() => {
       setSisaDetik(hitungSisaDetik(sesi.waktu_mulai, sesi.tanggal, sesi.durasi_menit))
     }, 1000)
     return () => clearInterval(interval)
   }, [sesi.waktu_mulai, sesi.tanggal, sesi.durasi_menit])
+
+  // Polling setiap 5 detik
+  useEffect(() => {
+    const interval = setInterval(fetchHadir, POLL_INTERVAL)
+    return () => clearInterval(interval)
+  }, [fetchHadir])
 
   const hadirNims = new Set(hadirList.map(h => h.nim))
   const belumHadir = semuaMahasiswa.filter(m => !hadirNims.has(m.nim))
@@ -69,9 +94,23 @@ export default function AbsensiSesiAktif({ sesi, hadirList, semuaMahasiswa }) {
             Sesi Berlangsung
           </span>
         </div>
-        <div className={`countdown-pill${waktuHabis ? ' expired' : ''}`}>
-          <IconClock size={14} />
-          {formatSisaWaktu(sisaDetik)}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {lastUpdated && (
+            <span style={{ fontSize: 11, color: '#64748b' }}>
+              Update {lastUpdated.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          )}
+          <button
+            onClick={fetchHadir}
+            title="Refresh sekarang"
+            style={{ display: 'inline-flex', padding: 4, background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', borderRadius: 6 }}
+          >
+            <IconRefresh size={14} />
+          </button>
+          <div className={`countdown-pill${waktuHabis ? ' expired' : ''}`}>
+            <IconClock size={14} />
+            {formatSisaWaktu(sisaDetik)}
+          </div>
         </div>
       </div>
 
@@ -79,7 +118,7 @@ export default function AbsensiSesiAktif({ sesi, hadirList, semuaMahasiswa }) {
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', margin: '0 0 6px' }}>{sesi.mata_kuliah}</h2>
           <div style={{ fontSize: 13, color: '#94a3b8' }}>
-            Dibuka {sesi.waktu_mulai?.slice(0, 5)} WIB · durasi {sesi.durasi_menit} menit
+            Dibuka {sesi.waktu_mulai?.slice(0, 5)} WIB · durasi {sesi.durasi_menit} menit · auto-refresh tiap {POLL_INTERVAL / 1000}s
           </div>
         </div>
 

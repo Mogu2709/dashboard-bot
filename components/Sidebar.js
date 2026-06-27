@@ -3,15 +3,16 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   IconOverview, IconUsers, IconClipboard, IconTask,
-  IconCalendar, IconLogout, IconGraduation, IconX,
+  IconCalendar, IconLogout, IconGraduation, IconX, IconBell,
 } from '@/components/icons'
 
 const menus = [
-  { href: '/',          icon: IconOverview,  label: 'Overview',  desc: 'Ringkasan kelas' },
-  { href: '/mahasiswa', icon: IconUsers,     label: 'Mahasiswa', desc: 'Data anggota' },
-  { href: '/absensi',   icon: IconClipboard, label: 'Absensi',   desc: 'Sesi kehadiran' },
-  { href: '/tugas',     icon: IconTask,      label: 'Tugas',     desc: 'Kelola tugas' },
-  { href: '/jadwal',    icon: IconCalendar,  label: 'Jadwal',    desc: 'Jadwal kuliah' },
+  { href: '/',             icon: IconOverview,  label: 'Overview',      desc: 'Ringkasan kelas' },
+  { href: '/mahasiswa',    icon: IconUsers,     label: 'Mahasiswa',     desc: 'Data anggota' },
+  { href: '/absensi',      icon: IconClipboard, label: 'Absensi',       desc: 'Sesi kehadiran' },
+  { href: '/tugas',        icon: IconTask,      label: 'Tugas',         desc: 'Kelola tugas' },
+  { href: '/jadwal',       icon: IconCalendar,  label: 'Jadwal',        desc: 'Jadwal kuliah' },
+  { href: '/pengumuman',   icon: IconBell,      label: 'Pengumuman',    desc: 'Kirim ke Discord' },
 ]
 
 export default function Sidebar({ open, onClose }) {

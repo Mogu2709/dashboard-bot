@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import EmptyState from '@/components/ui/EmptyState'
-import { IconClipboard, IconChevronDown, IconCheck, IconUserX } from '@/components/icons'
+import { IconClipboard, IconChevronDown, IconCheck, IconUserX, IconDownload } from '@/components/icons'
 
 function barColor(p) {
   if (p >= 75) return '#10b981'
@@ -13,6 +13,22 @@ function formatTanggal(tanggal) {
   return new Date(tanggal + 'T00:00:00').toLocaleDateString('id-ID', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
+}
+
+function exportCSV(sesi, hadirList, belumHadir) {
+  const rows = [
+    ['Status', 'Nama', 'NIM', 'Waktu Hadir'],
+    ...hadirList.map(h => ['Hadir', h.nama, h.nim, h.waktu_hadir || '-']),
+    ...belumHadir.map(m => ['Tidak Hadir', m.nama, m.nim, '-']),
+  ]
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `absensi_${sesi.mata_kuliah.replace(/\s+/g, '_')}_${sesi.tanggal}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 function SesiCard({ sesi, hadirList, semuaMahasiswa }) {
@@ -43,6 +59,22 @@ function SesiCard({ sesi, hadirList, semuaMahasiswa }) {
             </div>
             <div style={{ fontSize: 11, fontWeight: 600, color }}>{persentase}%</div>
           </div>
+          <button
+            onClick={e => { e.stopPropagation(); exportCSV(sesi, hadirList, belumHadir) }}
+            title="Export CSV"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '5px 10px', borderRadius: 8, border: '1px solid #252a3a',
+              background: 'transparent', color: '#64748b', fontSize: 12,
+              fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit',
+              transition: 'color 0.15s, border-color 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#818cf8'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#64748b'; e.currentTarget.style.borderColor = '#252a3a' }}
+          >
+            <IconDownload size={13} />
+            CSV
+          </button>
           <IconChevronDown size={16} style={{ color: '#64748b', transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
         </div>
       </button>
@@ -88,7 +120,6 @@ export default function AbsensiRiwayat({ riwayatSesi, detail, semuaMahasiswa }) 
     )
   }
 
-  // Kelompokkan sesi berdasarkan tanggal
   const grouped = riwayatSesi.reduce((acc, s) => {
     acc[s.tanggal] = acc[s.tanggal] || []
     acc[s.tanggal].push(s)
